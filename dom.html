@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+  <style>
+    /* Add your styling here */
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .cart-item {
+      border-bottom: 1px solid #ccc;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .heart-button {
+      cursor: pointer;
+      color: grey;
+    }
+
+    .heart-button.clicked {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shopping Cart</h1>
+
+  <div id="cart">
+    <!-- Cart items will be dynamically added here -->
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Sample cart items
+      const cartItems = [
+        { id: 1, name: 'Item 1', price: 10, quantity: 2 },
+        { id: 2, name: 'Item 2', price: 20, quantity: 1 },
+        // Add more items as needed
+      ];
+
+      // Function to render cart items
+      function renderCart() {
+        const cartContainer = document.getElementById('cart');
+        cartContainer.innerHTML = '';
+
+        cartItems.forEach(item => {
+          const cartItemElement = document.createElement('div');
+          cartItemElement.classList.add('cart-item');
+          cartItemElement.innerHTML = `
+            <span>${item.name}</span>
+            <button onclick="decreaseQuantity(${item.id})">-</button>
+            <span>${item.quantity}</span>
+            <button onclick="increaseQuantity(${item.id})">+</button>
+            <span>$${item.price * item.quantity}</span>
+            <span class="heart-button" onclick="toggleLike(${item.id})">&#x2661;</span>
+            <button onclick="deleteItem(${item.id})">Delete</button>
+          `;
+
+          if (item.liked) {
+            cartItemElement.querySelector('.heart-button').classList.add('clicked');
+          }
+
+          cartContainer.appendChild(cartItemElement);
+        });
+
+        // Calculate and display total price
+        const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+        cartContainer.innerHTML += `<div>Total Price: $${totalPrice}</div>`;
+      }
+
+      // Function to decrease item quantity
+      window.decreaseQuantity = function (itemId) {
+        const item = cartItems.find(item => item.id === itemId);
+        if (item && item.quantity > 1) {
+          item.quantity--;
+          renderCart();
+        }
+      };
+
+      // Function to increase item quantity
+      window.increaseQuantity = function (itemId) {
+        const item = cartItems.find(item => item.id === itemId);
+        if (item) {
+          item.quantity++;
+          renderCart();
+        }
+      };
+
+      // Function to toggle item like
+      window.toggleLike = function (itemId) {
+        const item = cartItems.find(item => item.id === itemId);
+        if (item) {
+          item.liked = !item.liked;
+          renderCart();
+        }
+      };
+
+      // Function to delete item
+      window.deleteItem = function (itemId) {
+        const index = cartItems.findIndex(item => item.id === itemId);
+        if (index !== -1) {
+          cartItems.splice(index, 1);
+          renderCart();
+        }
+      };
+
+      // Initial rendering
+      renderCart();
+    });
+  </script>
+</body>
+</html>
